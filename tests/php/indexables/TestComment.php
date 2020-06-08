@@ -195,6 +195,45 @@ class TestComment extends BaseTestCase {
 	}
 
 	/**
+	 * Test comment sync kill.
+	 *
+	 * @since 3.5
+	 * @group comment
+	 */
+	public function testCommentSyncKill() {
+		$post_id = Functions\create_and_sync_post();
+
+		$created_comment_id = wp_insert_comment( [
+			'comment_content' => 'Test comment',
+			'comment_post_ID' => $post_id,
+		] );
+
+		add_action(
+			'ep_sync_comment_on_transition',
+			function() {
+				$this->fired_actions['ep_sync_comment_on_transition'] = true;
+			}
+		);
+
+		add_filter(
+			'ep_comment_sync_kill',
+			function( $kill, $comment_id ) use ( $created_comment_id ) {
+				if ( $created_comment_id === $comment_id ) {
+					return true;
+				}
+
+				return $kill;
+			},
+			10,
+			2
+		);
+
+		ElasticPress\Indexables::factory()->get( 'comment' )->sync_manager->action_sync_on_update( $created_comment_id );
+
+		$this->assertArrayNotHasKey( 'ep_sync_comment_on_transition', $this->fired_actions );
+	}
+
+	/**
 	 * Test a basic comment query with and without ElasticPress
 	 *
 	 * @since 3.3
@@ -217,6 +256,8 @@ class TestComment extends BaseTestCase {
 		$comments = (new \WP_Comment_Query())->query( [
 			'ep_integrate' => true,
 		] );
+
+		var_dump( $comments );
 
 		foreach ( $comments as $comment ) {
 			$this->assertTrue( $comment->elasticsearch );
