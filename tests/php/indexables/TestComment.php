@@ -252,12 +252,12 @@ class TestComment extends BaseTestCase {
 
 		$this->assertEquals( 3, count( $comments ) );
 
+		new \WP_Comment_Query( [ 'ep_integrate' => true, 'hello' => true ] );
+
 		// Now try with Elasticsearch.
 		$comments = (new \WP_Comment_Query())->query( [
 			'ep_integrate' => true,
 		] );
-
-		var_dump( new \WP_Comment_Query( [ 'ep_integrate' => true ] ) );
 
 		foreach ( $comments as $comment ) {
 			$this->assertTrue( $comment->elasticsearch );

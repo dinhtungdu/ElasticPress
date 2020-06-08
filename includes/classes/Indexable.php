@@ -324,6 +324,10 @@ abstract class Indexable {
 			$index = $this->get_index_name();
 		}
 
+		if( !empty( $query_args['hello'])) {
+			var_dump( $index );
+		}
+
 		return Elasticsearch::factory()->query( $index, $this->slug, $formatted_args, $query_args, $query_object );
 	}
 
