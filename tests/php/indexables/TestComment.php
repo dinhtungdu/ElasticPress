@@ -257,7 +257,7 @@ class TestComment extends BaseTestCase {
 			'ep_integrate' => true,
 		] );
 
-		var_dump( new WP_Comment_Query( [ 'ep_integrate' => true ] ) );
+		var_dump( new \WP_Comment_Query( [ 'ep_integrate' => true ] ) );
 
 		foreach ( $comments as $comment ) {
 			$this->assertTrue( $comment->elasticsearch );
